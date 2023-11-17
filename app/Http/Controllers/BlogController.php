@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use App\Http\Requests\StoreBlogRequest;
 use App\Http\Requests\UpdateBlogRequest;
+use Illuminate\Http\Request;
+use http\Env\Response;
+use Illuminate\Support\Facades\Storage;
+use function Laravel\Prompts\error;
 
 class BlogController extends Controller
 {
@@ -13,7 +17,8 @@ class BlogController extends Controller
      */
     public function index()
     {
-        //
+        $blog = Blog::all();
+        return response()->json($blog);
     }
 
     /**
@@ -27,9 +32,15 @@ class BlogController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBlogRequest $request)
+    public function store(StoreBlogRequest $storeBlogRequest)
     {
-        //
+        $data = $storeBlogRequest->validated();
+        if($storeBlogRequest->hasFile('image')){
+            $data['image'] = $storeBlogRequest->file('image')->store('images','public');
+        }
+        Blog::create($data);
+
+        return response()->json("Blog Created !");
     }
 
     /**
@@ -37,7 +48,7 @@ class BlogController extends Controller
      */
     public function show(Blog $blog)
     {
-        //
+        return $blog;
     }
 
     /**
@@ -53,7 +64,11 @@ class BlogController extends Controller
      */
     public function update(UpdateBlogRequest $request, Blog $blog)
     {
-        //
+        $data = $request->validated();
+
+        $blog->update($data);
+
+        return response()->json("Blog Updated Successfully!");
     }
 
     /**
@@ -61,6 +76,10 @@ class BlogController extends Controller
      */
     public function destroy(Blog $blog)
     {
-        //
+        if(!$blog){
+            return response()->json(['message' => 'Blog not found !'], 404);
+        }
+        $blog->delete();
+        return response()->json(['message' => 'Blog deleted successfully !'], 200);
     }
 }
