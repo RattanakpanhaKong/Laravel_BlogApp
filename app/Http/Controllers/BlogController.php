@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use App\Http\Requests\StoreBlogRequest;
 use App\Http\Requests\UpdateBlogRequest;
+
 use Illuminate\Http\Request;
-use http\Env\Response;
 use Illuminate\Support\Facades\Storage;
 use function Laravel\Prompts\error;
 
@@ -21,26 +21,18 @@ class BlogController extends Controller
         return response()->json($blog);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreBlogRequest $storeBlogRequest)
     {
         $data = $storeBlogRequest->validated();
-        if($storeBlogRequest->hasFile('image')){
-            $data['image'] = $storeBlogRequest->file('image')->store('images','public');
+        if ($storeBlogRequest->hasFile('image')) {
+            $data['image'] = $storeBlogRequest->file('image')->store('images', 'public');
         }
         Blog::create($data);
 
-        return response()->json("Blog Created !");
+        return response()->json([
+            "message" => "Blog created",
+            "data" => $data
+        ], 201);
     }
 
     /**
@@ -48,7 +40,7 @@ class BlogController extends Controller
      */
     public function show(Blog $blog)
     {
-        return $blog;
+        return response()->json($blog);
     }
 
     /**
@@ -62,13 +54,21 @@ class BlogController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBlogRequest $request, Blog $blog)
+    public function update(Blog $blog, UpdateBlogRequest $request)
     {
         $data = $request->validated();
 
+        if ($request->file('image')) {
+            if (Storage::disk('local')->exists('public/' . $blog->image)) {
+                Storage::delete('public/' . $blog->image);
+            }
+            $data['image'] = $request->file('image')->store('images', 'public');
+        }
+
         $blog->update($data);
 
-        return response()->json("Blog Updated Successfully!");
+        return response()->json('Blog Updated');
+
     }
 
     /**
@@ -76,7 +76,7 @@ class BlogController extends Controller
      */
     public function destroy(Blog $blog)
     {
-        if(!$blog){
+        if (!$blog) {
             return response()->json(['message' => 'Blog not found !'], 404);
         }
         $blog->delete();

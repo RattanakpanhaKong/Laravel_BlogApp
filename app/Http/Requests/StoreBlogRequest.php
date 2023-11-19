@@ -22,10 +22,10 @@ class StoreBlogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'author' => 'required|string',
-            'title' => 'required|string',
-            'content' => 'required|string',
-            'image' => 'nullable|image'
+            'author' => ['required', 'string'],
+            'title' => ['required', 'string'],
+            'content' => ['required','string'],
+            'image' => ['required'],
         ];
     }
 }

@@ -17,15 +17,15 @@ class UpdateBlogRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'author' => 'required|string',
-            'title' => 'required|string',
-            'content' => 'required|string',
-            'image' => 'nullable|image'
+            'author' => ['required', 'string'],
+            'title' => ['required', 'string'],
+            'content' => ['required','string'],
+            'image' => ['nullable'],
         ];
     }
 }
