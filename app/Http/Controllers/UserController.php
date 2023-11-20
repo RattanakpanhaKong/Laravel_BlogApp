@@ -6,6 +6,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Session\Store;
 
 class UserController extends Controller
 {
@@ -15,9 +16,17 @@ class UserController extends Controller
     }
     public function store(StoreUserRequest $storeUserRequest){
         $data = $storeUserRequest->validated();
-        User::create($data);
+        $user = User::create($data);
 
-        return response()->json("User Created !");
+//        instantly login without requiring user to login with their credential
+//        auth()->login($user);
+
+        return response()->json("User has been created and logged in!");
+    }
+
+//    Log out user from account
+    public function logout(){
+
     }
     public function show(){
 
@@ -37,4 +46,5 @@ class UserController extends Controller
         $user->delete();
         return response()->json(['message' => 'User deleted successfully !'], 200);
     }
+
 }

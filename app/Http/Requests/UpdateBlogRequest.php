@@ -19,13 +19,14 @@ class UpdateBlogRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+//    validate the input for updating request
     public function rules(): array
     {
         return [
             'author' => 'required|string',
             'title' => 'required|string',
             'content' => 'required|string',
-            'image' => 'nullable|image'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ];
     }
 }

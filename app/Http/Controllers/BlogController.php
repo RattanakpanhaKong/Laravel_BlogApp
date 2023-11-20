@@ -66,6 +66,10 @@ class BlogController extends Controller
     {
         $data = $request->validated();
 
+        if($request->hasFile('image')){
+            $data['image'] = $request->file('image')->store('images', 'public');
+        }
+
         $blog->update($data);
 
         return response()->json("Blog Updated Successfully!");
